@@ -27,9 +27,9 @@ class WindowDataset(CocoDetection):
                                     xmin, ymin, w, h = map(float, rest)
                                     xmin, ymin = int(xmin*image_width), int(ymin*image_height)
                                     w, h = int(w*image_width), int(h*image_height)
-                                    boxes.append(torch.tensor([xmin, ymin, w+xmin, h+ymin]))
+                                    boxes.append(torch.tensor([xmin, ymin, min(w+xmin, image_width-1), min(h+ymin, image_height-1)]))
                                     labels.append(label)
-                                self.data[-1][1] = {'boxes':torch.stack(boxes).float(), 'labels':torch.tensor(labels).long()}
+                                self.data[-1][1] = {'boxes':torch.stack(boxes).float(), 'labels':torch.tensor(labels).long()+1}
                             image = torch.tensor(cv2.cvtColor(cv2.imread(f"{images_folder}/{folder}/{_file[:-3]}jpg", cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB))
                             image = image.permute(2,0,1).double()
                             self.data[-1][0] = image

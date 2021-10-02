@@ -12,15 +12,20 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
     header = 'Epoch: [{}]'.format(epoch)
 
     for images, targets in metric_logger.log_every(data_loader, print_freq, header):
+        if len(targets) == 0:
+            continue
+        if len(targets[0]['labels']) == 0:
+            continue
         images = list(image.to(device) for image in images)
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
-        print(len(images), images[0].shape)
-        print(len(targets), targets[0])
         loss_dict = model(images, targets)
 
         losses = sum(loss for loss in loss_dict.values())
         if not math.isfinite(losses):
+            print(images)
+            print(targets)
+            print(loss_dict)
             print("Loss is {}, stopping training".format(losses))
             sys.exit(1)
 
