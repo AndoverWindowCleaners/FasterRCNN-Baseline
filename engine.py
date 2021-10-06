@@ -46,6 +46,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
         metric_logger.update(loss=losses, **loss_dict)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
         writer.add_scalar('training loss', losses.item(), i+epoch*len(data_loader))
+        print('here')
+        print(metric_logger.meters)
+        # writer.add_scalar('acc', metric_logger.meters, i+epoch*len(data_loader))
 
     return metric_logger
 
