@@ -3,6 +3,11 @@ import sys
 import time
 import torch
 import utils
+from torch.utils.tensorboard import SummaryWriter
+
+# default `log_dir` is "runs" - we'll be more specific here
+writer = SummaryWriter('runs/fasterrcnn-baseline_1')
+
 
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
@@ -11,8 +16,13 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     header = 'Epoch: [{}]'.format(epoch)
 
-    for images, targets in metric_logger.log_every(data_loader, print_freq, header):
+    for i, (images, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+        print(targets)
+        if targets is None:
+            continue
         if len(targets) == 0:
+            continue
+        if targets[0] is None:
             continue
         if len(targets[0]['labels']) == 0:
             continue
@@ -35,6 +45,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
 
         metric_logger.update(loss=losses, **loss_dict)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        writer.add_scalar('training loss', losses.item() / 1000, i)
 
     return metric_logger
 

@@ -45,5 +45,6 @@ for epoch in range(num_epochs):
     # update the learning rate
     lr_scheduler.step()
     # evaluate on the test dataset
+    evaluate(model, train, device)
 
 print("DONE")
