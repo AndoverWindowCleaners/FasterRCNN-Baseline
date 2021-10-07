@@ -5,8 +5,8 @@ import json
 
 image_width = 128
 image_height = 96
-labels_folder = 'data/test/labels/'
-images_folder = 'data/test/images/'
+labels_folder = 'data/labels/'
+images_folder = 'data/images/'
 
 output = {'categories':[{'id':1, 'name':'window'}], 'images':[], 'annotations':[]}
 count = 1
@@ -35,5 +35,5 @@ for folder in os.listdir(labels_folder):
                     output['images'].append({})
                     output['images'][-1] = {'id':img_count,'file_name':f'{folder}/{_file[:-3]}jpg'}
 
-with open('data/test/anno','w') as f:
+with open('data/anno','w') as f:
     json.dump(output,f)
