@@ -16,15 +16,6 @@ def train_one_epoch(writer, model, optimizer, data_loader, device, epoch, print_
     metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}"))
     header = "Epoch: [{}]".format(epoch)
 
-    lr_scheduler = None
-    if epoch == 0:
-        warmup_factor = 1.0 / 1000
-        warmup_iters = min(1000, len(data_loader) - 1)
-
-        lr_scheduler = torch.optim.lr_scheduler.LinearLR(
-            optimizer, start_factor=warmup_factor, total_iters=warmup_iters
-        )
-
     for i, (images, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         if targets is None:
             continue
@@ -49,10 +40,7 @@ def train_one_epoch(writer, model, optimizer, data_loader, device, epoch, print_
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
-
-        if lr_scheduler is not None:
-            lr_scheduler.step()
-
+        
         metric_logger.update(loss=losses, **loss_dict)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
         writer.add_scalar("Loss/train", losses.cpu().item(), epoch*len(data_loader)+i)
