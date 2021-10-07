@@ -30,7 +30,7 @@ for folder in os.listdir(labels_folder):
                                 continue
                             output['annotations'].append({})
                             box = [xmin, ymin, min(w+xmin, image_width-1), min(h+ymin, image_height-1)]
-                            output['annotations'][-1] = {'id':count, 'image_id':img_count, 'category_id':1, 'bbox':box, 'iscrowd':0, 'area':box[2]*box[3]}
+                            output['annotations'][-1] = {'id':count, 'image_id':img_count, 'category_id':1, 'bbox':box, 'iscrowd':0, 'area':(box[2]-box[0])*(box[3]-box[1])}
                             count+=1
                     output['images'].append({})
                     output['images'][-1] = {'id':img_count,'file_name':f'{folder}/{_file[:-3]}jpg'}
