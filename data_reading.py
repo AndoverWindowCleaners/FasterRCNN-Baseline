@@ -2,13 +2,42 @@ import numpy as np
 import os
 import cv2
 import torch
-from torch.utils.data import Dataset
 from torchvision.datasets.coco import CocoDetection
+from torchvision.transforms import ToTensor
 
 class WindowDataset(CocoDetection):
-    def __init__(self, labels_folder = 'data/labels/', images_folder = 'data/images/'):
-        super(Dataset, self).__init__()
-        self.data = []
+    def __init__(self, images_folder = 'data/images/', labels_path = 'data/anno'):
+        super().__init__(images_folder, labels_path)
+        
+        
+    def __getitem__(self, idx):
+        img,labs = super().__getitem__(idx)
+        T = ToTensor()
+        img = T(img)
+        if len(labs) == 0:
+            return None, None
+        nTargets = {'boxes':[], 'labels':[], 'image_id':torch.tensor(labs[0]['image_id'],dtype=torch.int64), 'area':torch.tensor(labs[0]['image_id'],dtype=torch.int64)}
+        for lab in labs:
+            box = lab['bbox'].copy()
+            box[2] += box[0]
+            box[3] += box[1]
+            if box[2]-box[0] < 1:
+                continue
+            if box[3]-box[1] < 1:
+                continue
+            nTargets['boxes'].append(box)
+            nTargets['labels'].append(lab['category_id'])
+        nTargets['boxes'] = torch.tensor(nTargets['boxes']).float()
+        nTargets['labels'] = torch.tensor(nTargets['labels'],dtype=torch.int64)
+        return img.double(), nTargets
+
+    
+    def __len__(self):
+        return super().__len__()
+
+
+'''
+self.data = []
         image_width = 128
         image_height = 96
 
@@ -33,9 +62,4 @@ class WindowDataset(CocoDetection):
                             image = torch.tensor(cv2.cvtColor(cv2.imread(f"{images_folder}/{folder}/{_file[:-3]}jpg", cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB))
                             image = image.permute(2,0,1).double()
                             self.data[-1][0] = image
-        
-    def __getitem__(self, idx):
-        return tuple(self.data[idx])
-    
-    def __len__(self):
-        return len(self.data)
+'''
