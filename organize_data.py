@@ -23,7 +23,7 @@ for folder in os.listdir(labels_folder):
                         for line in f:
                             line = line.split()
                             label, rest = int(line[0]), line[1:]
-                            xmin, ymin, w, h = map(float, rest)
+                            xcenter, ycenter, w, h = map(float, rest)
                             xmin, ymin = int(xmin*image_width), int(ymin*image_height)
                             w, h = int(w*image_width), int(h*image_height)
                             if w<2 or h<2 or image_width-xmin < 2 or image_height-ymin < 2:
