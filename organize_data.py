@@ -24,12 +24,12 @@ for folder in os.listdir(labels_folder):
                             line = line.split()
                             label, rest = int(line[0]), line[1:]
                             xcenter, ycenter, w, h = map(float, rest)
-                            xmin, ymin = int(xmin*image_width), int(ymin*image_height)
+                            xmin, ymin = int(xcenter*image_width-w*image_width/2), int(ycenter*image_height-h*image_height/2)
                             w, h = int(w*image_width), int(h*image_height)
                             if w<2 or h<2 or image_width-xmin < 2 or image_height-ymin < 2:
                                 continue
                             output['annotations'].append({})
-                            box = [xmin, ymin, min(w+xmin, image_width-1), min(h+ymin, image_height-1)]
+                            box = [xmin, ymin, w, h]
                             output['annotations'][-1] = {'id':count, 'image_id':img_count, 'category_id':1, 'bbox':box, 'iscrowd':0, 'area':(box[2]-box[0])*(box[3]-box[1])}
                             count+=1
                     output['images'].append({})
