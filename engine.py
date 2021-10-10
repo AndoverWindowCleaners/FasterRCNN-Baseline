@@ -83,8 +83,6 @@ def evaluate(model, data_loader, device, print_freq = 100):
             continue
         if len(targets[0]['labels']) == 0:
             continue
-        if i > 50:
-            break
         images = list(img.to(device) for img in images)
 
         if torch.cuda.is_available():
